@@ -1,0 +1,31 @@
+{
+    "name": "lucianotonet/groq-laravel",
+    "description": "Unofficial Laravel package for the Groq API",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Luciano Tonet",
+            "email": "tonetlds@email.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "lucianotonet/groq-php": "^0.0.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "LucianoTonet\\GroqLaravel\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "LucianoTonet\\GroqLaravel\\GroqServiceProvider"
+            ],
+            "aliases": {
+                "Groq": "LucianoTonet\\GroqLaravel\\Facades\\Groq"
+            }
+        }
+    }
+}
