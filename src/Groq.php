@@ -2,8 +2,8 @@
 
 namespace LucianoTonet\GroqLaravel;
 
-class Groq
+class Groq extends \LucianoTonet\GroqPHP\Groq
 {
-    // Your implementation of the Groq class here
+    
 }
 

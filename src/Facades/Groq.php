@@ -8,7 +8,7 @@ class Groq extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return 'Groq';
+        return 'GroqLaravel';
     }
 }
 
