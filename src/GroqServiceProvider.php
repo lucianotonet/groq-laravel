@@ -9,7 +9,7 @@ class GroqServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind('GroqLaravel', function () {
-            return new Groq();
+            return new GroqLaravel();
         });
     }
 

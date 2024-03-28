@@ -2,6 +2,7 @@
     "name": "lucianotonet/groq-laravel",
     "description": "Unofficial Laravel package for the Groq API",
     "type": "library",
+    "version": "0.0.2",
     "license": "MIT",
     "authors": [
         {
@@ -11,8 +12,8 @@
     ],
     "require": {
         "php": ">=8.1",
-        "lucianotonet/groq-php": "^0.0.1"
-    },
+        "lucianotonet/groq-php": "^0.0.2"
+    },    
     "autoload": {
         "psr-4": {
             "LucianoTonet\\GroqLaravel\\": "src/"

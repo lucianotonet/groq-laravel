@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8c4d1df1e3944d45c28d445e7a3a4698",
+    "content-hash": "06aefa3cfbb371e7b547c8366a644b96",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -333,16 +333,16 @@
         },
         {
             "name": "lucianotonet/groq-php",
-            "version": "0.0.1",
+            "version": "0.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lucianotonet/groq-php.git",
-                "reference": "8fea7dff55eca796dfbc6e1c340ae82c7af0a60f"
+                "reference": "3c97462ae25b225ced5dd22fc2b92474105279e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lucianotonet/groq-php/zipball/8fea7dff55eca796dfbc6e1c340ae82c7af0a60f",
-                "reference": "8fea7dff55eca796dfbc6e1c340ae82c7af0a60f",
+                "url": "https://api.github.com/repos/lucianotonet/groq-php/zipball/3c97462ae25b225ced5dd22fc2b92474105279e2",
+                "reference": "3c97462ae25b225ced5dd22fc2b92474105279e2",
                 "shasum": ""
             },
             "require": {
@@ -368,12 +368,12 @@
                     "email": "tonetlds@gmail.com"
                 }
             ],
-            "description": "Unofficial PHP library for the Groq API",
+            "description": "PHP library to provide access to the Groq REST API",
             "support": {
                 "issues": "https://github.com/lucianotonet/groq-php/issues",
-                "source": "https://github.com/lucianotonet/groq-php/tree/v0.0.1"
+                "source": "https://github.com/lucianotonet/groq-php/tree/v0.0.2"
             },
-            "time": "2024-03-22T06:58:10+00:00"
+            "time": "2024-03-28T05:47:37+00:00"
         },
         {
             "name": "psr/http-client",
