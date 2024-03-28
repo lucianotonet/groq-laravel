@@ -1,6 +1,7 @@
-# Laravel Groq Package
+# Groq Laravel package
 
-This package provides integration for using the lucianotonet/groq-php package within Laravel 11 applications.
+Laravel package to provide access to the [Groq REST API](https://console.groq.com/docs) using the [Groq-PHP library](https://github.com/lucianotonet/groq-php).
+
 
 ## Installation
 
@@ -10,6 +11,19 @@ You can install the package via composer:
 composer require lucianotonet/groq-laravel
 ```
 
+### Set up your keys
+
+Set your [Groq API key](https://console.groq.com/keys) on the `.env` file:
+
+```.env
+GROQ_API_KEY=gsk_...
+```
+
+If you need, you can set an alternative proxy base URL:
+```
+GROQ_API_BASE_URL=https://api.groq.com/openai/v1 # can be overitten by request
+``` 
+
 ## Usage
 
 ### Groq Facade
@@ -17,24 +31,27 @@ composer require lucianotonet/groq-laravel
 You can use the `Groq` facade to interact with the Groq package:
 
 ```php
+use Illuminate\Support\Facades\Route;
 use LucianoTonet\GroqLaravel\Facades\Groq;
 
-// Example usage
-$result = Groq::query('your_groq_query_here');
-```
+Route::get('/', function () {
+    $groq = new Groq();
 
-### GroqServiceProvider
+    $chatCompletion = $groq->chat()->completions()->create([
+        'model' => 'llama2-70b-4096', // llama2-70b-4096, mixtral-8x7b-32768, gemma-7b-it
+        'messages' => [
+            [
+                'role' => 'user',
+                'content' => 'Explain the importance of low latency LLMs'
+            ]
+        ],
+    ]);
 
-The `GroqServiceProvider` is automatically registered by Laravel and provides the binding for the `Groq` class:
-
-```php
-use LucianoTonet\GroqLaravel\Groq;
-
-// Example usage within a service or controller
-$groq = app('Groq');
-$result = $groq->query('your_groq_query_here');
+    return $chatCompletion['choices'][0]['message']['content'];
+});
 ```
 
 ## License
 
 This package is open-sourced software licensed under the MIT license. See the [LICENSE](LICENSE) file for more information.
+
