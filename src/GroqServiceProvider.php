@@ -5,31 +5,14 @@ namespace LucianoTonet\GroqLaravel;
 use Illuminate\Support\ServiceProvider;
 use LucianoTonet\GroqPHP\Groq;
 
-/**
- * Provides the Groq service provider for the Laravel application.
- *
- * The GroqServiceProvider registers the Groq class with the application's service
- * container, allowing it to be resolved and used throughout the application. It
- * also publishes the default Groq configuration file to the application's config
- * directory, allowing the user to customize the configuration as needed.
- */
 class GroqServiceProvider extends ServiceProvider
 {
-    /**
-     * Registers the Groq service with the application's service container.
-     *
-     * This method binds the Groq class to the service container, allowing it to be
-     * resolved and used throughout the application. The Groq instance is configured
-     * with the API key and base URL specified in the application's environment.
-     *
-     * @return void
-     */
     public function register(): void
     {
         $this->app->bind(Groq::class, function ($app, $parameters = []) {
             return new Groq(
-                $parameters['apiKey'] ?? env('GROQ_API_KEY'),
-                array_merge($parameters['options'] ?? [], ['baseUrl' => env('GROQ_API_BASE', 'https://api.groq.com/openai/v1')])
+                $parameters['apiKey'] ?? config('groq.api_key'),
+                array_merge($parameters['options'] ?? [], ['baseUrl' => config('groq.api_base', 'https://api.groq.com/openai/v1')])
             );
         });
     }
@@ -45,6 +28,8 @@ class GroqServiceProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__ . '/../config/groq.php' => config_path('groq.php'),
-        ]);
+        ], 'config');
+
+        $this->loadTranslationsFrom(__DIR__ . '/../lang', 'groq');
     }
 }

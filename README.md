@@ -1,169 +1,68 @@
 # Groq Laravel
 
-The Groq Laravel package provides a service provider and facade to integrate the GroqPHP library into your Laravel application. This allows you to easily interact with the Groq API.
+Groq Laravel is a powerful package that provides seamless integration between Laravel applications and the Groq API, enabling you to leverage the capabilities of language models (LLMs) like LLaMa directly within your PHP projects.
+
+## Features
+
+- **Simple and Intuitive Interface:** Interact with the Groq API using the `Groq` facade, simplifying access to chat, audio, and model functionalities.
+- **Robust Error Handling:** Efficiently handle communication errors and Groq API responses by capturing specific exceptions and providing informative messages.
+- **Flexible Configuration:** Define multiple Groq API instances, customize request timeouts, configure cache options, and adjust the package behavior to your needs.
+- **Detailed Practical Examples:** Explore code examples that demonstrate how to use the Groq Laravel package in real scenarios, including chatbots, audio transcription, and more.
+- **Comprehensive Testing:** Ensure the package's quality and reliability with a suite of tests covering integration, unit testing, and configuration aspects.
 
 ## Installation
 
-Install the package with Composer:
+1. Install the package via Composer:
 
 ```bash
 composer require lucianotonet/groq-laravel
 ```
 
-## Configuration
-
-After registering the service provider, publish the configuration file:
+2. Publish the configuration file:
 
 ```bash
-php artisan vendor:publish --provider="LucianoTonet\\GroqLaravel\\GroqServiceProvider"
+php artisan vendor:publish --provider="LucianoTonet\GroqLaravel\GroqServiceProvider"
 ```
 
-This will create a `config/groq.php` file where you can set your Groq API key and base URL:
-
-```php
-return [
-    'api_key' => env('GROQ_API_KEY'),
-    'base_url' => env('GROQ_API_BASE', 'https://api.groq.com/openai/v1'),
-];
-```
-
-You can also set these values in your `.env` file:
+3. Configure your Groq API credentials in the `.env` file:
 
 ```
-GROQ_API_KEY=your-api-key-here
+GROQ_API_KEY=your_api_key_here
 GROQ_API_BASE=https://api.groq.com/openai/v1
 ```
 
-## Usage
+4. (Optional) Configure caching by defining the following environment variables in the `.env` file:
 
-### `Groq` Facade
+```
+GROQ_CACHE_DRIVER=file
+GROQ_CACHE_TTL=3600
+```
 
-This package provides a convenient `Groq` facade to interact with the Groq API.
+5. Import the `Groq` facade in your classes:
 
-### Examples
-
-To use the Groq facade, first import it into your class:
 ```php
 use LucianoTonet\GroqLaravel\Facades\Groq;
 ```
 
-#### Chat Completions
+## Usage
+
+Here's a simple example of creating a chat completion:
 
 ```php
-// Starting a Chat Session
-$response = Groq::chat()->completions()->create([
+$response = Groq::chat()->completion()->create([
+    'model' => 'llama-3.1-8b-instant',
     'messages' => [
-        ['role' => 'user', 'content' => 'Hello, world!'],
+        ['role' => 'user', 'content' => 'Hello, how are you?'],
     ],
 ]);
-
-// Process the response
-echo $response['choices'][0]['message']['content'];
 ```
 
-#### Chat Streaming
+Refer to the [documentation](docs/index.md) for more detailed information on available methods, configuration options, and practical examples.
 
-```php
-$message = 'Hello, world!';
+## Contributing
 
-// Make the call to the Groq API with streaming enabled
-$response = Groq::chat()->completions()->create([
-    'model' => 'mixtral-8x7b-32768',
-    'messages' => [
-        [
-            'role' => 'user',
-            'content' => $message
-        ]
-    ],
-    'stream' => true
-]);
-
-// Process the response chunks
-foreach ($response->chunks() as $chunk) {
-    if (isset($chunk['choices'][0]['delta']['role'])) {
-        echo "<strong>" . $chunk['choices'][0]['delta']['role'] . ":</strong> ";
-    }
-
-    if (isset($chunk['choices'][0]['delta']['content'])) {
-        echo $chunk['choices'][0]['delta']['content'];
-    }
-}
-```
-
-#### Tool Usage Example
-
-```php
-// Define the tools to be used
-$tools = [
-    'search' => function ($args) {
-        // Implement search tool logic
-        return 'Search results for ' . $args['query'];
-    },
-    'calculator' => function ($args) {
-        // Implement calculator tool logic
-        return $args['a'] + $args['b'];
-    },
-];
-
-$messages = [
-    ['role' => 'user', 'content' => 'Calculate 3 + 5 using the calculator tool.']
-];
-
-// Make the call to the Groq API
-$response = Groq::chat()->completions()->create([
-    'model' => 'llama3-groq-70b-8192-tool-use-preview',
-    'messages' => $messages,
-    'temperature' => 0,
-    'tool_choice' => 'auto',
-    'tools' => $tools
-]);
-
-// Process the API response
-if (!empty($response['choices'][0]['message']['tool_calls'])) {
-    foreach ($response['choices'][0]['message']['tool_calls'] as $tool_call) {
-        if ($tool_call['function']['name']) {
-            $function_args = json_decode($tool_call['function']['arguments'], true);
-
-            // Call the function defined earlier
-            $function_response = $tool_call['function']['name']($function_args);
-
-            // Add the function response to the message
-            $messages[] = [
-                'tool_call_id' => $tool_call['id'],
-                'role' => 'tool',
-                'name' => $tool_call['function']['name'],
-                'content' => $function_response,
-            ];
-        }
-    }
-
-    // Make a new call to the Groq API with the function response
-    $response = Groq::chat()->completions()->create([
-        'model' => 'llama3-groq-70b-8192-tool-use-preview',
-        'messages' => $messages
-    ]);
-}
-
-// Display the final response
-echo $response['choices'][0]['message']['content'];
-```
-
-#### Error Handling
-
-The Groq-Laravel package throws a `GroqException` for any errors encountered while communicating with the Groq API. You can catch this exception:
-
-```php
-try {
-    $response = Groq::chat()->completions()->create([
-        // ... your request parameters
-    ]);
-} catch (GroqException $e) {
-    // Handle the exception, for example, log the error or display a user-friendly message
-    Log::error($e->getMessage());
-    abort(500, 'An error occurred while processing your request.');
-}
-```
+Contributions are welcome! Please follow the guidelines outlined in the [CONTRIBUTING.md](CONTRIBUTING.md) file.
 
 ## License
 
-This package is open-sourced software licensed under the [MIT license](LICENSE).
+This package is open-source software licensed under the [MIT license](LICENSE).
