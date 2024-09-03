@@ -1,68 +1,104 @@
 # Groq Laravel
 
-Groq Laravel is a powerful package that provides seamless integration between Laravel applications and the Groq API, enabling you to leverage the capabilities of language models (LLMs) like LLaMa directly within your PHP projects.
+Groq Laravel é um pacote poderoso que fornece integração perfeita entre aplicações Laravel e a API Groq, permitindo que você aproveite a velocidade ultra-rápida de inferência de IA com alguns dos LLMs abertos mais populares, como o Llama3.1 ou Mixtral, em seus projetos PHP.
 
 ## Features
 
-- **Simple and Intuitive Interface:** Interact with the Groq API using the `Groq` facade, simplifying access to chat, audio, and model functionalities.
-- **Robust Error Handling:** Efficiently handle communication errors and Groq API responses by capturing specific exceptions and providing informative messages.
-- **Flexible Configuration:** Define multiple Groq API instances, customize request timeouts, configure cache options, and adjust the package behavior to your needs.
-- **Detailed Practical Examples:** Explore code examples that demonstrate how to use the Groq Laravel package in real scenarios, including chatbots, audio transcription, and more.
-- **Comprehensive Testing:** Ensure the package's quality and reliability with a suite of tests covering integration, unit testing, and configuration aspects.
+- **Interface Simples e Intuitiva:** Interaja com a API Groq usando a facade `Groq`, simplificando o acesso às funcionalidades de chat, tradução e transcrição de áudio e chamadas à funções.
+- **Tratamento Robusto de Erros:** Gerencie eficientemente erros de comunicação e respostas da API Groq, capturando exceções específicas e fornecendo mensagens informativas.
+- **Configuração Flexível:** Defina várias instâncias da API Groq, personalize timeouts de requisição, configure opções de cache e ajuste o comportamento do pacote conforme suas necessidades.
+- **Exemplos Práticos Detalhados:** Explore exemplos de código que demonstram como usar o pacote Groq Laravel em cenários reais, incluindo chatbots, transcrição de áudio e muito mais.
+- **Testes Abrangentes:** Garanta a qualidade e confiabilidade do pacote com um conjunto de testes que cobrem aspectos de integração, testes unitários e configuração.
 
-## Installation
+## Instalação
 
-1. Install the package via Composer:
+1. Instale o pacote via Composer:
 
-```bash
-composer require lucianotonet/groq-laravel
-```
+   ```bash
+   composer require lucianotonet/groq-laravel
+   ```
 
-2. Publish the configuration file:
+2. Publique o arquivo de configuração:
 
-```bash
-php artisan vendor:publish --provider="LucianoTonet\GroqLaravel\GroqServiceProvider"
-```
+   ```bash
+   php artisan vendor:publish --provider="LucianoTonet\GroqLaravel\GroqServiceProvider"
+   ```
 
-3. Configure your Groq API credentials in the `.env` file:
+3. Configure suas credenciais da API Groq no arquivo `.env`:
 
-```
-GROQ_API_KEY=your_api_key_here
-GROQ_API_BASE=https://api.groq.com/openai/v1
-```
+   ```
+   GROQ_API_KEY=your_api_key_here
+   GROQ_API_BASE=https://api.groq.com/openai/v1
+   ```
 
-4. (Optional) Configure caching by defining the following environment variables in the `.env` file:
+4. (Opcional) Configure o cache definindo as seguintes variáveis de ambiente no arquivo `.env`:
 
-```
-GROQ_CACHE_DRIVER=file
-GROQ_CACHE_TTL=3600
-```
+   ```
+   GROQ_CACHE_DRIVER=file
+   GROQ_CACHE_TTL=3600
+   ```
 
-5. Import the `Groq` facade in your classes:
+5. Importe a facade `Groq` em suas classes:
+
+   ```php
+   use LucianoTonet\GroqLaravel\Facades\Groq;
+   ```
+
+## Uso
+
+Aqui está um exemplo simples de como criar uma conclusão de chat:
 
 ```php
-use LucianoTonet\GroqLaravel\Facades\Groq;
-```
-
-## Usage
-
-Here's a simple example of creating a chat completion:
-
-```php
-$response = Groq::chat()->completion()->create([
+$response = Groq::chat()->completions()->create([
     'model' => 'llama-3.1-8b-instant',
     'messages' => [
-        ['role' => 'user', 'content' => 'Hello, how are you?'],
+        ['role' => 'user', 'content' => 'Olá, como você está?'],
     ],
 ]);
 ```
 
-Refer to the [documentation](docs/index.md) for more detailed information on available methods, configuration options, and practical examples.
+## Tratamento de Erros
 
-## Contributing
+O pacote Groq Laravel facilita o tratamento de erros que podem ocorrer ao interagir com a API Groq. Use um bloco `try-catch` para capturar e gerenciar exceções:
 
-Contributions are welcome! Please follow the guidelines outlined in the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+```php
+try {
+    $response = Groq::chat()->completions()->create([
+        'model' => 'llama-3.1-8b-instant',
+        // ...
+    ]);
+} catch (GroqException $e) {
+    Log::error('Erro na API Groq: ' . $e->getMessage());
+    abort(500, 'Erro ao processar sua solicitação.');
+}
+```
 
-## License
+## Testes
 
-This package is open-source software licensed under the [MIT license](LICENSE).
+Os testes são uma parte essencial do desenvolvimento de software de qualidade. O pacote Groq Laravel inclui uma suíte de testes que cobre integração, unidade e configuração. Para executar os testes, siga os passos abaixo:
+
+1. **Instale as dependências do projeto:**
+
+   ```bash
+   composer install
+   ```
+
+2. **Execute os testes:**
+
+   ```bash
+   vendor/bin/phpunit ./tests/Feature
+   ```
+
+   ou individualmente:
+
+   ```bash
+   vendor/bin/phpunit ./tests/Feature/FacadeTest.php
+   ```
+
+## Contribuindo
+
+Contribuições são bem-vindas! Siga as diretrizes descritas no arquivo [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Licença
+
+Este pacote é um software de código aberto licenciado sob a [licença MIT](LICENSE).
