@@ -1,5 +1,7 @@
 # Groq Laravel
 
+![Groq Laravel](./docs/art.png)
+
 [![Latest Stable Version](https://poser.pugx.org/lucianotonet/groq-laravel/v)](https://packagist.org/packages/lucianotonet/groq-laravel) [![Total Downloads](https://poser.pugx.org/lucianotonet/groq-laravel/downloads)](https://packagist.org/packages/lucianotonet/groq-laravel) [![Latest Unstable Version](https://poser.pugx.org/lucianotonet/groq-laravel/v/unstable)](https://packagist.org/packages/lucianotonet/groq-laravel) [![License](https://poser.pugx.org/lucianotonet/groq-laravel/license)](https://packagist.org/packages/lucianotonet/groq-laravel) [![PHP Version Require](https://poser.pugx.org/lucianotonet/groq-laravel/require/php)](https://packagist.org/packages/lucianotonet/groq-laravel)
 
 Groq Laravel é um pacote poderoso para integração entre suas aplicações Laravel a API da [Groq](https://groq.com/), permitindo que você aproveite velocidades ultra-rápidas de inferência de IA com alguns dos LLMs mais populares, como o Llama3.1 ou Mixtral.

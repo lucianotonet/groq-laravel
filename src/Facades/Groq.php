@@ -89,4 +89,15 @@ class Groq extends Facade
     {
         return app(GroqPHP::class)->apiKey();
     }
+
+    /**
+     * Iniciar uma sessão de visão com a API Groq.
+     *
+     * @return \LucianoTonet\GroqPHP\Vision Uma instância da classe Vision para gerenciar sessões de visão.
+     * @throws GroqException
+     */
+    public static function vision(): \LucianoTonet\GroqPHP\Vision
+    {
+        return app(GroqPHP::class)->vision();
+    }
 }

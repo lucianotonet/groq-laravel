@@ -25,4 +25,9 @@ return [
     ],
 
     'rate_limit' => env('GROQ_RATE_LIMIT', 60),
+
+    'vision' => [
+        'model' => env('GROQ_VISION_MODEL', 'llava-v1.5-7b-4096-preview'),
+        'max_tokens' => env('GROQ_VISION_MAX_TOKENS', 300),
+    ],
 ];

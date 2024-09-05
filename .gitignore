@@ -19,3 +19,4 @@ yarn-error.log
 /.vscode
 composer.lock
 proj2md.py
+CHANGELOG_GEN.sh
