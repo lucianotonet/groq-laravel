@@ -2,6 +2,10 @@
 
 
  *🚧 Next Relesase*
+
+
+## v0.0.9
+* [05/09/2024](https://github.com/lucianotonet/groq-laravel/commits/11639a559206f1d5eebd65951cec45c606f08fc4) Add Vision API functionality
 * [03/09/2024](https://github.com/lucianotonet/groq-laravel/commits/9868df67da994a011c573f4cd037d8a2eafb52cd) Atualiza links de badge para HTTPS no README
 * [03/09/2024](https://github.com/lucianotonet/groq-laravel/commits/6515f555cd92cd79d2c0bdfe8c002f6b4859d933) Atualiza badges no README para incluir versões instáveis
 
