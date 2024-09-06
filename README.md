@@ -6,6 +6,8 @@
 
 Groq Laravel is a powerful package for integrating your Laravel applications with the [Groq](https://groq.com/) API, allowing you to leverage ultra-fast AI inference speeds with some of the most popular LLMs, such as Llama3.1 or Mixtral.
 
+Need a "vanilla" PHP version? Try this out: [GroqPHP](https://github.com/lucianotonet/groq-php?tab=readme-ov-file#readme)
+
 ## Features
 
 - **Simple and Intuitive Interface:** Interact with the Groq API using the `Groq` facade, simplifying access to chat, translation, audio transcription, function call, and image analysis functionalities.
