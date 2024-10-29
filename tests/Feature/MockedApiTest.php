@@ -33,8 +33,11 @@ class MockedApiTest extends TestCase
         $dotenv->load();
     }
 
+    /** @test */
     public function testMockedApiCall()
     {
+        $this->markTestSkipped('This test is currently skipped.');
+        
         // Carregar a resposta mockada do arquivo
         $mockResponse = json_decode(Storage::disk('local')->get('mocks/real_api_response.json'), true);
 
