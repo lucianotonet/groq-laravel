@@ -2,9 +2,12 @@
 
 
  *🚧 Next Relesase*
-* [29/10/2024](https://github.com/lucianotonet/groq-laravel/commits/8ca6b92e02d1d10a2fd43bdbc60be95d6aee365e) Bump version to 0.0.10
+
 
 ## v0.0.10
+* [29/10/2024](https://github.com/lucianotonet/groq-laravel/commits/09f1be747860f9de89d5158d6370352c96b7020a) Update setting options
+* [29/10/2024](https://github.com/lucianotonet/groq-laravel/commits/588556a8c0871c7e0a842a7844202ba6f57ee489) Merge tag 'v0.0.10'
+* [29/10/2024](https://github.com/lucianotonet/groq-laravel/commits/db9d9ba7ed78253fa775ab3e0a7dd266d05ed7d4) Bump version to 0.0.10
 * [29/10/2024](https://github.com/lucianotonet/groq-laravel/commits/60bea6c9775e2570b30d06f706afa24bc29c77bb) Bump version to 0.0.10
 
 ## v0.0.9

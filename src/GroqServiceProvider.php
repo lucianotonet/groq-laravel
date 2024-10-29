@@ -9,7 +9,7 @@ class GroqServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->bind(Groq::class, function ($app, $parameters = []) {
+        $this->app->singleton(Groq::class, function ($app, $parameters = []) {
             return new Groq(
                 $parameters['apiKey'] ?? config('groq.api_key'),
                 array_merge($parameters['options'] ?? [], ['baseUrl' => config('groq.api_base', 'https://api.groq.com/openai/v1')])

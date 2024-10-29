@@ -65,7 +65,33 @@ class Groq extends Facade
      */
     public static function setOptions(array $options): void
     {
-        app(GroqPHP::class)->setOptions($options);
+        $instance = app(GroqPHP::class);
+        
+        // If apiKey is present in options, update the instance
+        if (isset($options['apiKey'])) {
+            app()->forgetInstance(GroqPHP::class);
+            app()->instance(GroqPHP::class, new GroqPHP(
+                $options['apiKey'],
+                array_merge(
+                    ['baseUrl' => config('groq.api_base', 'https://api.groq.com/openai/v1')],
+                    $options
+                )
+            ));
+            return;
+        }
+
+        // If baseUrl is present in options, update the instance
+        if (isset($options['baseUrl'])) {
+            app()->forgetInstance(GroqPHP::class);
+            app()->instance(GroqPHP::class, new GroqPHP(
+                $instance->apiKey(),
+                $options
+            ));
+            return;
+        }
+        
+        // If no apiKey or baseUrl, just update the existing options
+        $instance->setOptions($options);
     }
 
     /**
