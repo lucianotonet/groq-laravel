@@ -32,52 +32,56 @@ Need a "vanilla" PHP version? Try this out: [GroqPHP](https://github.com/luciano
 
 3. Configure your Groq API credentials in the `.env` file:
 
-   ```
+   ```config
    GROQ_API_KEY=your_api_key_here
-   GROQ_API_BASE=https://api.groq.com/openai/v1
-   ```
-
-4. (Optional) Configure caching by setting the following environment variables in the `.env` file:
-
-   ```
-   GROQ_CACHE_DRIVER=file
-   GROQ_CACHE_TTL=3600
-   ```
-
-5. Import the `Groq` facade into your classes:
-
-   ```php
-   use LucianoTonet\GroqLaravel\Facades\Groq;
    ```
 
 ## Usage
 
 Here is a simple example of how to create a chat completion:
 
-```php
-$response = Groq::chat()->completions()->create([
-    'model' => 'llama-3.1-8b-instant',
-    'messages' => [
-        ['role' => 'user', 'content' => 'Hello, how are you?'],
-    ],
-]);
-```
+   ```php
+   use LucianoTonet\GroqLaravel\Facades\Groq;
+
+   $response = Groq::chat()->completions()->create([
+      'model' => 'llama-3.1-70b-versatile',  // Check available models at console.groq.com/docs/models
+      'messages' => [
+         ['role' => 'user', 'content' => 'Hello, how are you?'],
+      ],
+   ]);
+
+   $response['choices'][0]['message']['content']; // "Hey there! I'm doing great! How can I help you today?"
+   ```
 
 ## Error Handling
 
 The Groq Laravel package makes it easy to handle errors that may occur when interacting with the Groq API. Use a `try-catch` block to capture and manage exceptions:
 
-```php
-try {
-    $response = Groq::chat()->completions()->create([
-        'model' => 'llama-3.1-8b-instant',
-        // ...
-    ]);
-} catch (GroqException $e) {
-    Log::error('Error in Groq API: ' . $e->getMessage());
-    abort(500, 'Error processing your request.');
-}
-```
+   ```php
+   try {
+      $response = Groq::chat()->completions()->create([
+         'model' => 'llama-3.1-8b-instant',
+         // ...
+      ]);
+   } catch (GroqException $e) {
+      Log::error('Error in Groq API: ' . $e->getMessage());
+      abort(500, 'Error processing your request.');
+   }
+   ```
+
+Sometimes, the Groq API fails and returns an error message in the response with a failed generation detail. In this case, you can use the `GroqException` class to get the error message:
+
+   ```php
+   try {
+      $response = Groq::chat()->completions()->create([
+         'model' => 'llama-3.1-8b-instant',
+         // ...
+      ]);
+   } catch (GroqException $e) {
+      $errorMessage = $e->getFailedGeneration();
+      // ...
+   }
+   ```
 
 ## Vision API
 
@@ -85,41 +89,47 @@ The Groq Laravel package also provides access to the Groq Vision API, allowing y
 
 **Example of use with image URL:**
 
-```php
-use LucianoTonet\GroqLaravel\Facades\Groq;
+   ```php
+   use LucianoTonet\GroqLaravel\Facades\Groq;
 
-// ...
+   // ...
 
-$imageUrl = 'https://example.com/image.jpg'; // Replace with your image URL
-$prompt = 'Describe the image';
+   $imageUrl = 'https://example.com/image.jpg'; // Replace with your image URL
+   $prompt = 'Describe the image';
 
-$response = Groq::vision()->analyze($imageUrl, $prompt);
+   $response = Groq::vision()->analyze($imageUrl, $prompt);
 
-$imageDescription = $response['choices'][0]['message']['content'];
+   $imageDescription = $response['choices'][0]['message']['content'];
 
-// ... do something with the image description
-```
+   // ... do something with the image description
+   ```
 
 **Example of use with local image file:**
 
-```php
-use LucianoTonet\GroqLaravel\Facades\Groq;
+   ```php
+   use LucianoTonet\GroqLaravel\Facades\Groq;
 
-// ...
+   // ...
 
-$imagePath = '/path/to/your/image.jpg'; // Replace with the actual path
-$prompt = 'What do you see in this image?';
+   $imagePath = '/path/to/your/image.jpg'; // Replace with the actual path
+   $prompt = 'What do you see in this image?';
 
-$response = Groq::vision()->analyze($imagePath, $prompt);
+   $response = Groq::vision()->analyze($imagePath, $prompt);
 
-$imageAnalysis = $response['choices'][0]['message']['content'];
+   $imageAnalysis = $response['choices'][0]['message']['content'];
 
-// ... do something with the image analysis
-```
+   // ... do something with the image analysis
+   ```
 
 **Remember:**
 - The Vision API requires a model compatible with image analysis, such as `llava-v1.5-7b-4096-preview`. You can configure the default model for Vision in the `config/groq.php` configuration file.
 - The Vision API is an experimental feature and may not meet expectations, as well as not having long-term support.
+
+
+## More examples
+
+As the GroqLaravel package is a wrapper for the GroqPHP package, you can check more examples in the [GroqPHP repository](https://github.com/lucianotonet/groq-php?tab=readme-ov-file#readme).
+
 
 ## Testing
 
