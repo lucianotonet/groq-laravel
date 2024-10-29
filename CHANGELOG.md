@@ -2,7 +2,7 @@
 
 
  *🚧 Next Relesase*
-
+* [29/10/2024](https://github.com/lucianotonet/groq-laravel/commits/8ca6b92e02d1d10a2fd43bdbc60be95d6aee365e) Bump version to 0.0.10
 
 ## v0.0.10
 * [29/10/2024](https://github.com/lucianotonet/groq-laravel/commits/60bea6c9775e2570b30d06f706afa24bc29c77bb) Bump version to 0.0.10
