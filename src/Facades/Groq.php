@@ -5,22 +5,32 @@ namespace LucianoTonet\GroqLaravel\Facades;
 use Illuminate\Support\Facades\Facade;
 use LucianoTonet\GroqPHP\Groq as GroqPHP;
 use LucianoTonet\GroqPHP\GroqException;
+use Groq\Resources\Chat\ChatCompletionResponse;
+use Groq\Resources\Completions\CompletionResponse;
+use Groq\Resources\Models\ModelsResponse;
 
 /**
- * Class Groq
- * This class serves as a facade for the GroqPHP library, providing a simplified interface
- * for accessing Groq API methods within a Laravel application.
+ * @method static \LucianoTonet\GroqPHP\Chat chat()
+ * @method static \LucianoTonet\GroqPHP\Models models()
+ * @method static \LucianoTonet\GroqPHP\Vision vision()
+ * @method static \LucianoTonet\GroqPHP\Audio audio()
+ * @method static \LucianoTonet\GroqPHP\Files files()
+ * @method static \LucianoTonet\GroqPHP\Batches batches()
+ * @method static void setConfig(array $options)
+ * @method static \LucianoTonet\GroqPHP\Groq getClient()
+ *
+ * @see \LucianoTonet\GroqLaravel\GroqClient
  */
 class Groq extends Facade
 {
     /**
-     * Retrieve the class name of the GroqPHP instance.
+     * Get the registered name of the component.
      *
-     * @return string The class name of the GroqPHP instance.
+     * @return string
      */
     protected static function getFacadeAccessor(): string
     {
-        return GroqPHP::class;
+        return 'groq';
     }
 
     /**
@@ -84,7 +94,7 @@ class Groq extends Facade
         if (isset($options['baseUrl'])) {
             app()->forgetInstance(GroqPHP::class);
             app()->instance(GroqPHP::class, new GroqPHP(
-                $instance->apiKey(),
+                $instance->getOptions()['apiKey'],
                 $options
             ));
             return;
@@ -95,25 +105,14 @@ class Groq extends Facade
     }
 
     /**
-     * Retrieve the base URL for the Groq API.
+     * Get configuration options from the Groq instance.
      *
-     * @return string The base URL used for API requests.
+     * @return array The current configuration options
      * @throws GroqException
      */
-    public static function baseUrl(): string
+    public static function getOptions(): array
     {
-        return app(GroqPHP::class)->baseUrl();
-    }
-
-    /**
-     * Retrieve the API key used for authentication with the Groq API.
-     *
-     * @return string The API key for authenticating requests.
-     * @throws GroqException
-     */
-    public static function apiKey(): string
-    {
-        return app(GroqPHP::class)->apiKey();
+        return app(GroqPHP::class)->getOptions();
     }
 
     /**

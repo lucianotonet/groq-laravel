@@ -3,33 +3,37 @@
 namespace LucianoTonet\GroqLaravel;
 
 use Illuminate\Support\ServiceProvider;
-use LucianoTonet\GroqPHP\Groq;
 
 class GroqServiceProvider extends ServiceProvider
 {
-    public function register(): void
+    /**
+     * Bootstrap the application services.
+     */
+    public function boot()
     {
-        $this->app->singleton(Groq::class, function ($app, $parameters = []) {
-            return new Groq(
-                $parameters['apiKey'] ?? config('groq.api_key'),
-                array_merge($parameters['options'] ?? [], ['baseUrl' => config('groq.api_base', 'https://api.groq.com/openai/v1')])
-            );
-        });
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__ . '/../config/groq.php' => config_path('groq.php'),
+            ], 'config');
+        }
+
+        $this->loadTranslationsFrom(__DIR__ . '/../lang', 'groq');
     }
 
     /**
-     * Publishes the Groq configuration file to the application's config directory.
-     *
-     * This method is called during the package's boot process. It allows the user to
-     * publish the default Groq configuration file to their application, so they can
-     * customize the configuration as needed.
+     * Register the application services.
      */
-    public function boot(): void
+    public function register()
     {
-        $this->publishes([
-            __DIR__ . '/../config/groq.php' => config_path('groq.php'),
-        ], 'config');
+        // Merge config
+        $this->mergeConfigFrom(__DIR__ . '/../config/groq.php', 'groq');
 
-        $this->loadTranslationsFrom(__DIR__ . '/../lang', 'groq');
+        // Register the GroqClient singleton
+        $this->app->singleton(GroqClient::class, function ($app) {
+            return new GroqClient(config('groq.api_key'));
+        });
+
+        // Register facade
+        $this->app->alias(GroqClient::class, 'groq');
     }
 }
