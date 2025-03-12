@@ -3,16 +3,59 @@
 namespace LucianoTonet\GroqLaravel;
 
 use LucianoTonet\GroqPHP\Groq;
+use LucianoTonet\GroqPHP\GroqException;
 
 class GroqClient
 {
+    /**
+     * The Groq PHP SDK client instance.
+     *
+     * @var \LucianoTonet\GroqPHP\Groq
+     */
     protected Groq $client;
 
+    /**
+     * Create a new GroqClient instance.
+     * 
+     * Priority for API key:
+     * 1. Constructor parameter
+     * 2. Environment variable (GROQ_API_KEY)
+     * 3. Config file (config/groq.php)
+     *
+     * @param string|null $apiKey Optional API key to override the one in config
+     * @throws \LucianoTonet\GroqPHP\GroqException
+     */
     public function __construct(?string $apiKey = null)
     {
-        $apiKey = $apiKey ?? config('groq.api_key');
+        // Try to get API key from different sources in order of priority
+        $apiKey = $apiKey 
+            ?? env('GROQ_API_KEY') 
+            ?? config('groq.api_key');
+
+        // Validate API key
+        if (empty($apiKey)) {
+            throw new GroqException(
+                'No API key found. Please provide it via:' . PHP_EOL .
+                '1. Constructor parameter' . PHP_EOL .
+                '2. Environment variable (GROQ_API_KEY)' . PHP_EOL .
+                '3. Config file (config/groq.php)',
+                GroqException::CODE_INVALID_REQUEST,
+                GroqException::TYPE_INVALID_REQUEST,
+            );
+        }
         
-        $this->client = new Groq($apiKey, [
+        // Initialize client with API key and default config
+        $this->client = new Groq($apiKey, $this->getDefaultConfig());
+    }
+
+    /**
+     * Get the default configuration from Laravel config.
+     *
+     * @return array
+     */
+    protected function getDefaultConfig(): array
+    {
+        return [
             'baseUrl' => config('groq.api_base', 'https://api.groq.com/openai/v1'),
             'timeout' => config('groq.timeout', 30),
             'model' => config('groq.model', 'llama3-8b-8192'),
@@ -21,7 +64,7 @@ class GroqClient
             'top_p' => config('groq.options.top_p', 1.0),
             'frequency_penalty' => config('groq.options.frequency_penalty', 0),
             'presence_penalty' => config('groq.options.presence_penalty', 0),
-        ]);
+        ];
     }
 
     /**
@@ -67,7 +110,7 @@ class GroqClient
     /**
      * Get files instance
      * 
-     * @return \LucianoTonet\GroqPHP\Files
+     * @return \LucianoTonet\GroqPHP\FileManager
      */
     public function files()
     {
@@ -77,7 +120,7 @@ class GroqClient
     /**
      * Get batches instance
      * 
-     * @return \LucianoTonet\GroqPHP\Batches
+     * @return \LucianoTonet\GroqPHP\BatchManager
      */
     public function batches()
     {
@@ -92,17 +135,21 @@ class GroqClient
      */
     public function setConfig(array $options): void
     {
-        $this->client->setOptions($options);
+        $this->client = new Groq(
+            $this->client->apiKey,
+            array_merge($this->getDefaultConfig(), $options)
+        );
     }
 
     /**
-     * Get configuration options
+     * Set configuration options (alias for setConfig)
      * 
-     * @return array
+     * @param array $options
+     * @return void
      */
-    public function getConfig(): array
+    public function setOptions(array $options): void
     {
-        return $this->client->getOptions();
+        $this->setConfig($options);
     }
 
     /**
