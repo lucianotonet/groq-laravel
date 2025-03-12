@@ -1,0 +1,39 @@
+# Groq Laravel Project Rules
+
+## Project Info
+- Package: Laravel integration for GroqCloud API
+- Uses PHP 8.1+ / Laravel support
+- Composer package: lucianotonet/groq-laravel
+- Base dependency: lucianotonet/groq-php
+
+## Key Guidelines
+
+### Code Style
+- Use English for all code and comments
+- Follow PSR-12 coding standards
+- Properly document all public methods with PHPDoc
+
+### Models
+- Default model: 'llama-3.1-8b-instant' (standardized throughout the codebase)
+- Model name should be consistent in config and code
+
+### Configuration
+- Config priorities: 
+  1. Runtime options (setConfig/setOptions)
+  2. Environment variables (.env)
+  3. Default values in config file
+
+### Testing
+- Integration tests should not rely on external resources (URLs, APIs)
+- Mock API responses when possible
+- Use base64 encoded test images instead of external URLs
+- Tests should have descriptive names and assertions
+
+### Error Handling
+- Validate API key early with clear error messages
+- Use proper exception types from GroqException
+
+### Important Learnings
+- GroqClient should preserve previously set options when calling setConfig()
+- The Facade is just a proxy to the underlying client instance
+- Avoid inconsistencies between default values in different parts of code 

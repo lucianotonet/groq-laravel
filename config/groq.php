@@ -30,7 +30,7 @@ return [
     | da API Groq. Esse modelo será usado se nenhum for especificado na requisição.
     |
     */
-    'model' => env('GROQ_MODEL', 'llama3-8b-8192'),
+    'model' => env('GROQ_MODEL', 'llama-3.1-8b-instant'),
 
     /*
     |--------------------------------------------------------------------------

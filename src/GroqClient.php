@@ -58,7 +58,7 @@ class GroqClient
         return [
             'baseUrl' => config('groq.api_base', 'https://api.groq.com/openai/v1'),
             'timeout' => config('groq.timeout', 30),
-            'model' => config('groq.model', 'llama3-8b-8192'),
+            'model' => config('groq.model', 'llama-3.1-8b-instant'),
             'max_tokens' => config('groq.options.max_tokens', 150),
             'temperature' => config('groq.options.temperature', 0.7),
             'top_p' => config('groq.options.top_p', 1.0),
@@ -135,9 +135,26 @@ class GroqClient
      */
     public function setConfig(array $options): void
     {
+        // Get current client options if available
+        $currentOptions = [];
+        if (property_exists($this->client, 'options')) {
+            $currentOptions = $this->client->options;
+        }
+        
+        // Merge in order of precedence: 
+        // 1. New options (highest priority)
+        // 2. Current options (if they exist)
+        // 3. Default config (lowest priority)
+        $mergedOptions = array_merge(
+            $this->getDefaultConfig(), 
+            $currentOptions, 
+            $options
+        );
+        
+        // Create new client with updated options
         $this->client = new Groq(
             $this->client->apiKey,
-            array_merge($this->getDefaultConfig(), $options)
+            $mergedOptions
         );
     }
 

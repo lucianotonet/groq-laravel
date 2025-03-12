@@ -15,9 +15,9 @@ class GroqIntegrationTest extends TestCase
 
     protected function getEnvironmentSetUp($app)
     {
-        // Use a chave real da API para testes de integração
+        // Use the real API key for integration tests
         $app['config']->set('groq.api_key', env('GROQ_API_KEY'));
-        $app['config']->set('groq.model', 'llama3-8b-8192');
+        $app['config']->set('groq.model', 'llama-3.1-8b-instant');
     }
 
     /** @test */
@@ -34,9 +34,9 @@ class GroqIntegrationTest extends TestCase
     public function it_can_create_chat_completion()
     {
         $response = Groq::chat()->completions()->create([
-            'model' => 'llama3-8b-8192',
+            'model' => 'llama-3.1-8b-instant',
             'messages' => [
-                ['role' => 'user', 'content' => 'Diga olá em português']
+                ['role' => 'user', 'content' => 'Say hello in Portuguese']
             ]
         ]);
 
@@ -50,9 +50,10 @@ class GroqIntegrationTest extends TestCase
     /** @test */
     public function it_can_analyze_image()
     {
-        $imageUrl = 'https://raw.githubusercontent.com/lucianotonet/groq-laravel/main/docs/art.png';
+        // Using a small embedded test image as Base64 to avoid external dependency
+        $base64Image = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFElEQVR42mP8z8BQz0AEYBxVSF+FABJADveWkH6oAAAAAElFTkSuQmCC';
         
-        $response = Groq::vision()->analyze($imageUrl, 'Descreva esta imagem');
+        $response = Groq::vision()->analyze($base64Image, 'Describe this image');
 
         $this->assertIsArray($response);
         $this->assertArrayHasKey('choices', $response);
@@ -67,8 +68,8 @@ class GroqIntegrationTest extends TestCase
         $this->expectException(\LucianoTonet\GroqPHP\GroqException::class);
 
         Groq::chat()->completions()->create([
-            'model' => 'llama3-8b-8192',
-            'messages' => [] // Mensagens vazias devem gerar erro
+            'model' => 'llama-3.1-8b-instant',
+            'messages' => [] // Empty messages should generate an error
         ]);
     }
 
@@ -76,9 +77,9 @@ class GroqIntegrationTest extends TestCase
     public function it_can_use_different_models()
     {
         $response = Groq::chat()->completions()->create([
-            'model' => 'llama3-8b-8192', // Usando o modelo padrão ao invés do mixtral
+            'model' => 'llama-3.1-8b-instant', // Using the default model instead of mixtral
             'messages' => [
-                ['role' => 'user', 'content' => 'Diga olá em português']
+                ['role' => 'user', 'content' => 'Say hello in Portuguese']
             ]
         ]);
 
@@ -89,9 +90,9 @@ class GroqIntegrationTest extends TestCase
     /** @test */
     public function it_can_handle_file_operations()
     {
-        // Criar arquivo JSONL temporário
+        // Create temporary JSONL file
         $tempFile = tempnam(sys_get_temp_dir(), 'groq_test_') . '.jsonl';
-        file_put_contents($tempFile, json_encode(['prompt' => 'Olá']) . "\n" . json_encode(['prompt' => 'Mundo']) . "\n");
+        file_put_contents($tempFile, json_encode(['prompt' => 'Hello']) . "\n" . json_encode(['prompt' => 'World']) . "\n");
 
         // Upload
         $file = Groq::files()->upload($tempFile, 'batch');
@@ -115,23 +116,27 @@ class GroqIntegrationTest extends TestCase
     /** @test */
     public function it_respects_configuration_options()
     {
-        // Configurando para gerar respostas curtas, mas com limite de tokens maior
+        // Configure to generate short responses with stricter token limit
         Groq::setConfig([
             'temperature' => 0.1,
-            'max_tokens' => 30 // Usando um valor muito mais restritivo para o teste
+            'max_tokens' => 30 // Using a much more restrictive value for testing
         ]);
 
         $response = Groq::chat()->completions()->create([
-            'model' => 'llama3-8b-8192',
+            'model' => 'llama-3.1-8b-instant',
             'messages' => [
-                ['role' => 'user', 'content' => 'Diga apenas "Olá, mundo!"']
+                ['role' => 'user', 'content' => 'Just say "Hello, world!"']
             ],
-            'max_tokens' => 30 // Garantindo que o valor seja passado na requisição também
+            'max_tokens' => 30 // Ensuring the value is also passed in the request
         ]);
 
         $this->assertIsArray($response);
         $this->assertArrayHasKey('choices', $response);
-        // Vamos apenas verificar se há resposta, sem verificar o tamanho
+        // Let's just check if there's a response, without verifying the size
         $this->assertNotEmpty($response['choices'][0]['message']['content']);
+        
+        // Verify the response is reasonably constrained by max_tokens
+        $content = $response['choices'][0]['message']['content'];
+        $this->assertLessThanOrEqual(100, strlen($content), 'Response should be constrained by max_tokens');
     }
 } 
