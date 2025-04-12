@@ -10,7 +10,62 @@
  *   - options: Additional options to pass to the GROQ API client.
  */
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Groq API Key
+    |--------------------------------------------------------------------------
+    |
+    | Aqui você pode especificar sua chave de API Groq. Ela será usada quando
+    | o GroqClient for criado. Esta chave pode ser obtida no site da Groq.
+    |
+    */
     'api_key' => env('GROQ_API_KEY'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Modelo Padrão
+    |--------------------------------------------------------------------------
+    |
+    | Aqui você pode especificar o modelo padrão a ser usado nas solicitações 
+    | da API Groq. Esse modelo será usado se nenhum for especificado na requisição.
+    |
+    */
+    'model' => env('GROQ_MODEL', 'llama-3.1-8b-instant'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cache
+    |--------------------------------------------------------------------------
+    |
+    | Configuração para cache das respostas da API. Útil para reduzir o número
+    | de requisições e melhorar a performance.
+    |
+    */
+    'cache' => [
+        'enabled' => env('GROQ_CACHE_ENABLED', true),
+        'ttl' => env('GROQ_CACHE_TTL', 3600), // 1 hora em segundos
+        'key_prefix' => env('GROQ_CACHE_KEY_PREFIX', 'groq_'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Timeout
+    |--------------------------------------------------------------------------
+    |
+    | Define o tempo máximo em segundos para aguardar uma resposta da API.
+    |
+    */
+    'timeout' => env('GROQ_TIMEOUT', 30),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Base URL
+    |--------------------------------------------------------------------------
+    |
+    | URL base da API Groq. Normalmente você não precisa mudar isso,
+    | mas está disponível caso a Groq mude seu endpoint no futuro.
+    |
+    */
     'api_base' => env('GROQ_API_BASE', 'https://api.groq.com/openai/v1'),
 
     'options' => [
