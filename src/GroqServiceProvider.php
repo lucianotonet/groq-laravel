@@ -15,6 +15,9 @@ class GroqServiceProvider extends ServiceProvider
                 array_merge($parameters['options'] ?? [], ['baseUrl' => config('groq.api_base', 'https://api.groq.com/openai/v1')])
             );
         });
+        
+        // Register the alias 'groq' -> Groq::class
+        $this->app->alias(Groq::class, 'groq');
     }
 
     /**
