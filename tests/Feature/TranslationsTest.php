@@ -39,11 +39,7 @@ class TranslationsTest extends TestCase
         $mockTranslations = $this->createMock(Translations::class);
         $mockTranslations->expects($this->once())
             ->method('create')
-            ->with($this->callback(function ($params) {
-                return isset($params['file']) && 
-                       isset($params['model']) && 
-                       $params['model'] === 'whisper-large-v3';
-            }))
+            ->with(["file" => __DIR__ . '/test-audio.mp3', "model" => 'whisper-large-v3'])
             ->willReturn($expectedResponse);
 
         // Mock the Audio class that will return our mock Translations
@@ -103,13 +99,12 @@ class TranslationsTest extends TestCase
         $mockTranslations = $this->createMock(Translations::class);
         $mockTranslations->expects($this->once())
             ->method('create')
-            ->with($this->callback(function ($params) {
-                return isset($params['file']) && 
-                       isset($params['temperature']) && 
-                       $params['temperature'] === 0.3 &&
-                       isset($params['response_format']) && 
-                       $params['response_format'] === 'verbose_json';
-            }))
+            ->with([
+                'file' => __DIR__ . '/test-audio.mp3',
+                'model' => 'whisper-large-v3',
+                'temperature' => 0.3,
+                'response_format' => 'verbose_json'
+            ])
             ->willReturn($expectedResponse);
 
         // Mock the Audio class that will return our mock Translations
@@ -146,4 +141,4 @@ class TranslationsTest extends TestCase
         $this->assertCount(2, $result['segments']);
         $this->assertEquals('This is a test translation', $result['segments'][0]['text']);
     }
-} 
+}

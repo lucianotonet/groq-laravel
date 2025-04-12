@@ -3,11 +3,15 @@
 namespace LucianoTonet\GroqLaravel;
 
 use Illuminate\Support\ServiceProvider;
+use LucianoTonet\GroqPHP\Groq;
 
 class GroqServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        // Merge config
+        $this->mergeConfigFrom(__DIR__ . '/../config/groq.php', 'groq');
+
         $this->app->singleton(Groq::class, function ($app, $parameters = []) {
             return new Groq(
                 $parameters['apiKey'] ?? config('groq.api_key'),
@@ -17,6 +21,14 @@ class GroqServiceProvider extends ServiceProvider
         
         // Register the alias 'groq' -> Groq::class
         $this->app->alias(Groq::class, 'groq');
+
+        // Register the GroqClient singleton
+        $this->app->singleton(GroqClient::class, function ($app) {
+            return new GroqClient(config('groq.api_key'));
+        });
+
+        // Register facade
+        $this->app->alias(GroqClient::class, 'groq');
     }
 
     /**
@@ -31,22 +43,5 @@ class GroqServiceProvider extends ServiceProvider
         }
 
         $this->loadTranslationsFrom(__DIR__ . '/../lang', 'groq');
-    }
-
-    /**
-     * Register the application services.
-     */
-    public function register()
-    {
-        // Merge config
-        $this->mergeConfigFrom(__DIR__ . '/../config/groq.php', 'groq');
-
-        // Register the GroqClient singleton
-        $this->app->singleton(GroqClient::class, function ($app) {
-            return new GroqClient(config('groq.api_key'));
-        });
-
-        // Register facade
-        $this->app->alias(GroqClient::class, 'groq');
     }
 }

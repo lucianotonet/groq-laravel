@@ -16,6 +16,5 @@
     </coverage>
     <php>
         <env name="APP_ENV" value="testing"/>
-        <env name="GROQ_API_KEY" value=""/>
     </php>
-</phpunit> 
+</phpunit>

@@ -39,8 +39,8 @@ class GroqClient
                 '1. Constructor parameter' . PHP_EOL .
                 '2. Environment variable (GROQ_API_KEY)' . PHP_EOL .
                 '3. Config file (config/groq.php)',
-                GroqException::CODE_INVALID_REQUEST,
-                GroqException::TYPE_INVALID_REQUEST,
+                400, // HTTP 400 Bad Request code
+                'invalid_request_error' // Error type
             );
         }
         
@@ -153,7 +153,7 @@ class GroqClient
         
         // Create new client with updated options
         $this->client = new Groq(
-            $this->client->apiKey,
+            $this->getApiKey(), // Use the getter method instead of direct property access
             $mergedOptions
         );
     }
@@ -178,4 +178,18 @@ class GroqClient
     {
         return $this->client;
     }
-} 
+    
+    /**
+     * Get the API key from the client
+     * 
+     * @return string
+     */
+    private function getApiKey(): string
+    {
+        // Access the API key through reflection since it's not directly accessible
+        $reflection = new \ReflectionClass($this->client);
+        $property = $reflection->getProperty('apiKey');
+        $property->setAccessible(true);
+        return $property->getValue($this->client);
+    }
+}
