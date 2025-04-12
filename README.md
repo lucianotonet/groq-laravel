@@ -125,6 +125,202 @@ The Groq Laravel package also provides access to the Groq Vision API, allowing y
 - The Vision API requires a model compatible with image analysis, such as `llava-v1.5-7b-4096-preview`. You can configure the default model for Vision in the `config/groq.php` configuration file.
 - The Vision API is an experimental feature and may not meet expectations, as well as not having long-term support.
 
+## Audio Transcriptions
+
+The Groq Laravel package allows you to transcribe audio using advanced models like Whisper.
+
+**Example of transcribing an audio file:**
+
+   ```php
+   use LucianoTonet\GroqLaravel\Facades\Groq;
+
+   // Basic transcription
+   $result = Groq::transcriptions()->create([
+       'file' => storage_path('app/audio/recording.mp3'),
+       'model' => 'whisper-large-v3'
+   ]);
+
+   echo $result['text']; // Transcribed text from the audio
+   ```
+
+**Example with advanced options:**
+
+   ```php
+   // Transcription with advanced options
+   $result = Groq::transcriptions()->create([
+       'file' => storage_path('app/audio/recording.mp3'),
+       'model' => 'whisper-large-v3',
+       'language' => 'en', // Audio language (optional)
+       'prompt' => 'Transcription of a business meeting', // Context to improve accuracy
+       'temperature' => 0.3, // Lower randomness for more accuracy
+       'response_format' => 'verbose_json' // Detailed format with timestamps
+   ]);
+
+   // Now you have access to timestamps and segments
+   echo $result['text']; // Complete text
+   foreach ($result['segments'] as $segment) {
+       echo "From {$segment['start']} to {$segment['end']}: {$segment['text']}\n";
+   }
+   ```
+
+## Audio Translations
+
+The Groq Laravel package also provides support for direct audio translation to English text.
+
+**Basic example of audio translation:**
+
+   ```php
+   use LucianoTonet\GroqLaravel\Facades\Groq;
+
+   // Basic translation (always to English)
+   $result = Groq::translations()->create([
+       'file' => storage_path('app/audio/portuguese.mp3'),
+       'model' => 'whisper-large-v3'
+   ]);
+
+   echo $result['text']; // English text translated from the audio
+   ```
+
+**Example with advanced options:**
+
+   ```php
+   // Translation with advanced options
+   $result = Groq::translations()->create([
+       'file' => storage_path('app/audio/french.mp3'),
+       'model' => 'whisper-large-v3',
+       'prompt' => 'This is a business meeting', // Context in English
+       'temperature' => 0.3, // Lower randomness for more accuracy
+       'response_format' => 'verbose_json' // Detailed format with timestamps
+   ]);
+
+   // Now you have access to timestamps and segments in English
+   echo $result['text']; // Complete text in English
+   foreach ($result['segments'] as $segment) {
+       echo "From {$segment['start']} to {$segment['end']}: {$segment['text']}\n";
+   }
+   ```
+
+## Step-by-Step Reasoning
+
+Groq Laravel offers support for obtaining responses with step-by-step reasoning, useful for detailed explanations, mathematical problems, or any solution that benefits from a transparent process.
+
+**Example with raw reasoning format:**
+
+   ```php
+   use LucianoTonet\GroqLaravel\Facades\Groq;
+
+   // Raw format - displays the entire reasoning process
+   $response = Groq::reasoning()->analyze('How to solve x^2 - 9 = 0?', [
+       'model' => 'llama-3.1-8b-instant',
+       'reasoning_format' => 'raw'
+   ]);
+
+   echo $response['choices'][0]['message']['content'];
+   // Displays both the reasoning process and the answer
+   ```
+
+**Example with parsed reasoning format:**
+
+   ```php
+   // Parsed format - separates reasoning from the final answer
+   $response = Groq::reasoning()->analyze('What is the capital of France?', [
+       'model' => 'llama-3.1-70b-instant',
+       'reasoning_format' => 'parsed'
+   ]);
+
+   echo "Answer: " . $response['choices'][0]['message']['content'] . "\n";
+   echo "Reasoning: " . $response['choices'][0]['message']['reasoning'];
+   // Displays the direct answer (Paris) and the reasoning separately
+   ```
+
+**Example with hidden reasoning:**
+
+   ```php
+   // Hidden format - only the final answer
+   $response = Groq::reasoning()->analyze('Calculate the area of a circle with radius 5cm', [
+       'model' => 'llama-3.1-8b-instant',
+       'reasoning_format' => 'hidden'
+   ]);
+
+   echo $response['choices'][0]['message']['content'];
+   // Displays only the final answer, without the reasoning process
+   ```
+
+## Advanced Completions
+
+Groq Laravel supports advanced completion features, including image analysis and response streaming.
+
+**Example with image input:**
+
+   ```php
+   use LucianoTonet\GroqLaravel\Facades\Groq;
+
+   // Completions with image
+   $response = Groq::completions()->create([
+       'model' => 'llava-v1.5-7b-4096-preview',
+       'messages' => [
+           [
+               'role' => 'user',
+               'content' => [
+                   ['type' => 'text', 'text' => 'What is in this image?'],
+                   [
+                       'type' => 'image_url',
+                       'image_url' => [
+                           'url' => 'https://example.com/image.jpg'
+                       ]
+                   ]
+               ]
+           ]
+       ]
+   ]);
+
+   echo $response['choices'][0]['message']['content'];
+   ```
+
+**Example with streaming:**
+
+   ```php
+   // Completions with streaming
+   $stream = Groq::completions()->create([
+       'model' => 'llama-3.1-8b-instant',
+       'messages' => [
+           ['role' => 'user', 'content' => 'Tell a short story about a robot']
+       ],
+       'stream' => true
+   ]);
+
+   // Process the response in stream (useful for real-time interfaces)
+   foreach ($stream->chunks() as $chunk) {
+       if (isset($chunk['choices'][0]['delta']['content'])) {
+           echo $chunk['choices'][0]['delta']['content'];
+           // Send to client in real-time (in real applications)
+           ob_flush();
+           flush();
+       }
+   }
+   ```
+
+## File Management
+
+Groq Laravel allows you to manage files for use with the API.
+
+**Example of file management:**
+
+   ```php
+   use LucianoTonet\GroqLaravel\Facades\Groq;
+
+   // List files
+   $files = Groq::files()->list();
+   
+   // Upload a file
+   $file = Groq::files()->upload(storage_path('app/data/document.txt'), 'assistants');
+   
+   // Retrieve file information
+   $fileInfo = Groq::files()->retrieve($file['id']);
+   
+   // Delete a file
+   Groq::files()->delete($file['id']);
+   ```
 
 ## More examples
 
