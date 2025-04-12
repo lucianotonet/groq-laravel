@@ -1,6 +1,6 @@
 {
     "name": "lucianotonet/groq-laravel",
-    "description": "Laravel package to access Groq REST API",
+    "description": "Laravel integration for GroqCloud",
     "type": "library",
     "version": "1.0.0",
     "license": "MIT",
@@ -24,6 +24,15 @@
         "psr-4": {
             "LucianoTonet\\GroqLaravel\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "LucianoTonet\\GroqLaravel\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
     },
     "extra": {
         "laravel": {

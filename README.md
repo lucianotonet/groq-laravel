@@ -1,125 +1,235 @@
 # Groq Laravel
 
-![Groq Laravel](https://raw.githubusercontent.com/lucianotonet/groq-laravel/v0.0.9/docs/art.png)
+![Groq Laravel](./art.png)
 
-[![Latest Stable Version](https://poser.pugx.org/lucianotonet/groq-laravel/v)](https://packagist.org/packages/lucianotonet/groq-laravel) [![Total Downloads](https://poser.pugx.org/lucianotonet/groq-laravel/downloads)](https://packagist.org/packages/lucianotonet/groq-laravel) [![Latest Unstable Version](https://poser.pugx.org/lucianotonet/groq-laravel/v/unstable)](https://packagist.org/packages/lucianotonet/groq-laravel) [![License](https://poser.pugx.org/lucianotonet/groq-laravel/license)](https://packagist.org/packages/lucianotonet/groq-laravel) [![PHP Version Require](https://poser.pugx.org/lucianotonet/groq-laravel/require/php)](https://packagist.org/packages/lucianotonet/groq-laravel)
+[![Latest Stable Version](https://poser.pugx.org/lucianotonet/groq-laravel/v)](https://packagist.org/packages/lucianotonet/groq-laravel) 
+[![Total Downloads](https://poser.pugx.org/lucianotonet/groq-laravel/downloads)](https://packagist.org/packages/lucianotonet/groq-laravel) 
+[![License](https://poser.pugx.org/lucianotonet/groq-laravel/license)](https://packagist.org/packages/lucianotonet/groq-laravel)
 
-Groq Laravel is a powerful package for integrating your Laravel applications with the [Groq](https://groq.com/) API, allowing you to leverage ultra-fast AI inference speeds with some of the most popular LLMs, such as Llama3.1 or Mixtral.
-
-Need a "vanilla" PHP version? Try this out: [GroqPHP](https://github.com/lucianotonet/groq-php?tab=readme-ov-file#readme)
-
-## Features
-
-- **Simple and Intuitive Interface:** Interact with the Groq API using the `Groq` facade, simplifying access to chat, translation, audio transcription, function call, and image analysis functionalities.
-- **Robust Error Handling:** Efficiently manage communication errors and responses from the Groq API, capturing specific exceptions and providing informative messages.
-- **Flexible Configuration:** Define multiple Groq API instances, customize request timeouts, configure caching options, and adjust the package's behavior to suit your needs.
-- **Detailed Practical Examples:** Explore code examples that demonstrate how to use the Groq Laravel package in real-world scenarios, including chatbots, audio transcription, and more.
-- **Comprehensive Testing:** Ensure the quality and reliability of the package with a suite of tests covering integration, unit testing, and configuration.
+A Laravel package to easily integrate your application with the Groq API, providing access to popular models like Llama3, Mixtral, and others.
 
 ## Installation
 
-1. Install the package via Composer:
-
-   ```bash
-   composer require lucianotonet/groq-laravel
-   ```
+1. Install via Composer:
+```bash
+composer require lucianotonet/groq-laravel
+```
 
 2. Publish the configuration file:
+```bash
+php artisan vendor:publish --provider="LucianoTonet\GroqLaravel\GroqServiceProvider"
+```
 
-   ```bash
-   php artisan vendor:publish --provider="LucianoTonet\GroqLaravel\GroqServiceProvider"
-   ```
+3. Add your API key to the `.env` file:
+```env
+GROQ_API_KEY=your-api-key-here
+GROQ_MODEL=llama3-8b-8192  # optional, default model
+```
 
-3. Configure your Groq API credentials in the `.env` file:
+## Basic Usage
 
-   ```config
-   GROQ_API_KEY=your_api_key_here
-   ```
+### Chat
 
-## Usage
+```php
+use LucianoTonet\GroqLaravel\Facades\Groq;
 
-Here is a simple example of how to create a chat completion:
+$response = Groq::chat()->create([
+    'messages' => [
+        ['role' => 'user', 'content' => 'Hello, how are you?']
+    ]
+]);
 
-   ```php
-   use LucianoTonet\GroqLaravel\Facades\Groq;
+echo $response['choices'][0]['message']['content'];
+```
 
-   $response = Groq::chat()->completions()->create([
-      'model' => 'llama-3.1-70b-versatile',  // Check available models at console.groq.com/docs/models
-      'messages' => [
-         ['role' => 'user', 'content' => 'Hello, how are you?'],
-      ],
-   ]);
+### Available Models
 
-   $response['choices'][0]['message']['content']; // "Hey there! I'm doing great! How can I help you today?"
-   ```
+```php
+$models = Groq::models()->list();
+
+foreach ($models['data'] as $model) {
+    echo $model['id'] . "\n";
+}
+```
+
+### Computer Vision
+
+```php
+$response = Groq::vision()->analyze(
+    'path/to/image.jpg',
+    'Describe this image'
+);
+
+echo $response['choices'][0]['message']['content'];
+```
+
+### Audio
+
+```php
+$response = Groq::audio()->transcribe('path/to/audio.mp3');
+echo $response['text'];
+```
+
+### Batch Processing
+
+```php
+// Upload file
+$file = Groq::files()->upload('data.jsonl', 'batch');
+
+// Create batch
+$batch = Groq::batches()->create([
+    'input_file_id' => $file->id,
+    'endpoint' => '/v1/chat/completions'
+]);
+```
+
+## Configuration
+
+The package can be configured through the `config/groq.php` file. The main options are:
+
+```php
+return [
+    'api_key' => env('GROQ_API_KEY'),
+    'model' => env('GROQ_MODEL', 'llama3-8b-8192'),
+    'timeout' => env('GROQ_TIMEOUT', 30),
+    
+    'options' => [
+        'temperature' => 0.7,
+        'max_tokens' => 150,
+        'top_p' => 1.0,
+        'frequency_penalty' => 0,
+        'presence_penalty' => 0,
+    ],
+    
+    'cache' => [
+        'enabled' => true,
+        'ttl' => 3600,
+    ],
+];
+```
+
+## Runtime Configuration
+
+You can change settings during runtime:
+
+```php
+Groq::setConfig([
+    'model' => 'mixtral-8x7b',
+    'temperature' => 0.9,
+    'max_tokens' => 500
+]);
+```
 
 ## Error Handling
 
-The Groq Laravel package makes it easy to handle errors that may occur when interacting with the Groq API. Use a `try-catch` block to capture and manage exceptions:
+The package throws `GroqException` when something goes wrong:
 
-   ```php
-   try {
-      $response = Groq::chat()->completions()->create([
-         'model' => 'llama-3.1-8b-instant',
-         // ...
-      ]);
-   } catch (GroqException $e) {
-      Log::error('Error in Groq API: ' . $e->getMessage());
-      abort(500, 'Error processing your request.');
-   }
-   ```
+```php
+use LucianoTonet\GroqPHP\GroqException;
 
-Sometimes, the Groq API fails and returns an error message in the response with a failed generation detail. In this case, you can use the `GroqException` class to get the error message:
+try {
+    $response = Groq::chat()->create([
+        'messages' => [
+            ['role' => 'user', 'content' => 'Hello!']
+        ]
+    ]);
+} catch (GroqException $e) {
+    echo "Error: " . $e->getMessage();
+}
+```
 
-   ```php
-   try {
-      $response = Groq::chat()->completions()->create([
-         'model' => 'llama-3.1-8b-instant',
-         // ...
-      ]);
-   } catch (GroqException $e) {
-      $errorMessage = $e->getFailedGeneration();
-      // ...
-   }
-   ```
+## Development
 
-## Vision API
+### Development Installation
 
-The Groq Laravel package also provides access to the Groq Vision API, allowing you to analyze images and extract information from them.
+1. Clone the repository
+```bash
+git clone https://github.com/lucianotonetto/groq-laravel.git
+cd groq-laravel
+```
+
+2. Install dependencies
+```bash
+composer install
+```
+
+### Running Tests
+
+The package includes unit and integration tests. To run them:
+
+1. Copy the example environment file:
+```bash
+cp .env.example .env
+```
+
+2. Configure your Groq API key in the `.env` file (required only for integration tests):
+```env
+GROQ_API_KEY=your-api-key-here
+```
+
+3. Run the tests:
+
+- All tests:
+```bash
+composer test
+```
+
+- Unit tests only:
+```bash
+vendor/bin/phpunit tests/Feature/GroqTest.php
+```
+
+- Integration tests only:
+```bash
+vendor/bin/phpunit tests/Feature/GroqIntegrationTest.php
+```
+
+- Tests with code coverage:
+```bash
+vendor/bin/phpunit --coverage-html coverage
+```
+
+**Note**: Unit tests don't require an API key. Integration tests will be skipped if no API key is provided.
+
+## Advanced Features
+
+### Vision API
+
+The Vision API allows you to analyze images and extract information from them.
 
 **Example of use with image URL:**
 
-   ```php
-   use LucianoTonet\GroqLaravel\Facades\Groq;
+```php
+use LucianoTonet\GroqLaravel\Facades\Groq;
 
-   // ...
+// ...
 
-   $imageUrl = 'https://example.com/image.jpg'; // Replace with your image URL
-   $prompt = 'Describe the image';
+$imageUrl = 'https://example.com/image.jpg'; // Replace with your image URL
+$prompt = 'Describe the image';
 
-   $response = Groq::vision()->analyze($imageUrl, $prompt);
+$response = Groq::vision()->analyze($imageUrl, $prompt);
 
-   $imageDescription = $response['choices'][0]['message']['content'];
+$imageDescription = $response['choices'][0]['message']['content'];
 
-   // ... do something with the image description
-   ```
+// ... do something with the image description
+```
 
 **Example of use with local image file:**
 
-   ```php
-   use LucianoTonet\GroqLaravel\Facades\Groq;
+```php
+use LucianoTonet\GroqLaravel\Facades\Groq;
 
-   // ...
+// ...
 
-   $imagePath = '/path/to/your/image.jpg'; // Replace with the actual path
-   $prompt = 'What do you see in this image?';
+$imagePath = '/path/to/your/image.jpg'; // Replace with the actual path
+$prompt = 'What do you see in this image?';
 
-   $response = Groq::vision()->analyze($imagePath, $prompt);
+$response = Groq::vision()->analyze($imagePath, $prompt);
 
-   $imageAnalysis = $response['choices'][0]['message']['content'];
+$imageAnalysis = $response['choices'][0]['message']['content'];
 
-   // ... do something with the image analysis
-   ```
+// ... do something with the image analysis
+```
 
 **Remember:**
 - The Vision API requires a model compatible with image analysis, such as `llava-v1.5-7b-4096-preview`. You can configure the default model for Vision in the `config/groq.php` configuration file.
@@ -131,37 +241,37 @@ The Groq Laravel package allows you to transcribe audio using advanced models li
 
 **Example of transcribing an audio file:**
 
-   ```php
-   use LucianoTonet\GroqLaravel\Facades\Groq;
+```php
+use LucianoTonet\GroqLaravel\Facades\Groq;
 
-   // Basic transcription
-   $result = Groq::transcriptions()->create([
-       'file' => storage_path('app/audio/recording.mp3'),
-       'model' => 'whisper-large-v3'
-   ]);
+// Basic transcription
+$result = Groq::transcriptions()->create([
+    'file' => storage_path('app/audio/recording.mp3'),
+    'model' => 'whisper-large-v3'
+]);
 
-   echo $result['text']; // Transcribed text from the audio
-   ```
+echo $result['text']; // Transcribed text from the audio
+```
 
 **Example with advanced options:**
 
-   ```php
-   // Transcription with advanced options
-   $result = Groq::transcriptions()->create([
-       'file' => storage_path('app/audio/recording.mp3'),
-       'model' => 'whisper-large-v3',
-       'language' => 'en', // Audio language (optional)
-       'prompt' => 'Transcription of a business meeting', // Context to improve accuracy
-       'temperature' => 0.3, // Lower randomness for more accuracy
-       'response_format' => 'verbose_json' // Detailed format with timestamps
-   ]);
+```php
+// Transcription with advanced options
+$result = Groq::transcriptions()->create([
+    'file' => storage_path('app/audio/recording.mp3'),
+    'model' => 'whisper-large-v3',
+    'language' => 'en', // Audio language (optional)
+    'prompt' => 'Transcription of a business meeting', // Context to improve accuracy
+    'temperature' => 0.3, // Lower randomness for more accuracy
+    'response_format' => 'verbose_json' // Detailed format with timestamps
+]);
 
-   // Now you have access to timestamps and segments
-   echo $result['text']; // Complete text
-   foreach ($result['segments'] as $segment) {
-       echo "From {$segment['start']} to {$segment['end']}: {$segment['text']}\n";
-   }
-   ```
+// Now you have access to timestamps and segments
+echo $result['text']; // Complete text
+foreach ($result['segments'] as $segment) {
+    echo "From {$segment['start']} to {$segment['end']}: {$segment['text']}\n";
+}
+```
 
 ## Audio Translations
 
@@ -169,36 +279,36 @@ The Groq Laravel package also provides support for direct audio translation to E
 
 **Basic example of audio translation:**
 
-   ```php
-   use LucianoTonet\GroqLaravel\Facades\Groq;
+```php
+use LucianoTonet\GroqLaravel\Facades\Groq;
 
-   // Basic translation (always to English)
-   $result = Groq::translations()->create([
-       'file' => storage_path('app/audio/portuguese.mp3'),
-       'model' => 'whisper-large-v3'
-   ]);
+// Basic translation (always to English)
+$result = Groq::translations()->create([
+    'file' => storage_path('app/audio/portuguese.mp3'),
+    'model' => 'whisper-large-v3'
+]);
 
-   echo $result['text']; // English text translated from the audio
-   ```
+echo $result['text']; // English text translated from the audio
+```
 
 **Example with advanced options:**
 
-   ```php
-   // Translation with advanced options
-   $result = Groq::translations()->create([
-       'file' => storage_path('app/audio/french.mp3'),
-       'model' => 'whisper-large-v3',
-       'prompt' => 'This is a business meeting', // Context in English
-       'temperature' => 0.3, // Lower randomness for more accuracy
-       'response_format' => 'verbose_json' // Detailed format with timestamps
-   ]);
+```php
+// Translation with advanced options
+$result = Groq::translations()->create([
+    'file' => storage_path('app/audio/french.mp3'),
+    'model' => 'whisper-large-v3',
+    'prompt' => 'This is a business meeting', // Context in English
+    'temperature' => 0.3, // Lower randomness for more accuracy
+    'response_format' => 'verbose_json' // Detailed format with timestamps
+]);
 
-   // Now you have access to timestamps and segments in English
-   echo $result['text']; // Complete text in English
-   foreach ($result['segments'] as $segment) {
-       echo "From {$segment['start']} to {$segment['end']}: {$segment['text']}\n";
-   }
-   ```
+// Now you have access to timestamps and segments in English
+echo $result['text']; // Complete text in English
+foreach ($result['segments'] as $segment) {
+    echo "From {$segment['start']} to {$segment['end']}: {$segment['text']}\n";
+}
+```
 
 ## Step-by-Step Reasoning
 
@@ -206,45 +316,45 @@ Groq Laravel offers support for obtaining responses with step-by-step reasoning,
 
 **Example with raw reasoning format:**
 
-   ```php
-   use LucianoTonet\GroqLaravel\Facades\Groq;
+```php
+use LucianoTonet\GroqLaravel\Facades\Groq;
 
-   // Raw format - displays the entire reasoning process
-   $response = Groq::reasoning()->analyze('How to solve x^2 - 9 = 0?', [
-       'model' => 'llama-3.1-8b-instant',
-       'reasoning_format' => 'raw'
-   ]);
+// Raw format - displays the entire reasoning process
+$response = Groq::reasoning()->analyze('How to solve x^2 - 9 = 0?', [
+    'model' => 'llama-3.1-8b-instant',
+    'reasoning_format' => 'raw'
+]);
 
-   echo $response['choices'][0]['message']['content'];
-   // Displays both the reasoning process and the answer
-   ```
+echo $response['choices'][0]['message']['content'];
+// Displays both the reasoning process and the answer
+```
 
 **Example with parsed reasoning format:**
 
-   ```php
-   // Parsed format - separates reasoning from the final answer
-   $response = Groq::reasoning()->analyze('What is the capital of France?', [
-       'model' => 'llama-3.1-70b-instant',
-       'reasoning_format' => 'parsed'
-   ]);
+```php
+// Parsed format - separates reasoning from the final answer
+$response = Groq::reasoning()->analyze('What is the capital of France?', [
+    'model' => 'llama-3.1-70b-instant',
+    'reasoning_format' => 'parsed'
+]);
 
-   echo "Answer: " . $response['choices'][0]['message']['content'] . "\n";
-   echo "Reasoning: " . $response['choices'][0]['message']['reasoning'];
-   // Displays the direct answer (Paris) and the reasoning separately
-   ```
+echo "Answer: " . $response['choices'][0]['message']['content'] . "\n";
+echo "Reasoning: " . $response['choices'][0]['message']['reasoning'];
+// Displays the direct answer (Paris) and the reasoning separately
+```
 
 **Example with hidden reasoning:**
 
-   ```php
-   // Hidden format - only the final answer
-   $response = Groq::reasoning()->analyze('Calculate the area of a circle with radius 5cm', [
-       'model' => 'llama-3.1-8b-instant',
-       'reasoning_format' => 'hidden'
-   ]);
+```php
+// Hidden format - only the final answer
+$response = Groq::reasoning()->analyze('Calculate the area of a circle with radius 5cm', [
+    'model' => 'llama-3.1-8b-instant',
+    'reasoning_format' => 'hidden'
+]);
 
-   echo $response['choices'][0]['message']['content'];
-   // Displays only the final answer, without the reasoning process
-   ```
+echo $response['choices'][0]['message']['content'];
+// Displays only the final answer, without the reasoning process
+```
 
 ## Advanced Completions
 
@@ -252,80 +362,77 @@ Groq Laravel supports advanced completion features, including image analysis and
 
 **Example with image input:**
 
-   ```php
-   use LucianoTonet\GroqLaravel\Facades\Groq;
+```php
+use LucianoTonet\GroqLaravel\Facades\Groq;
 
-   // Completions with image
-   $response = Groq::completions()->create([
-       'model' => 'llava-v1.5-7b-4096-preview',
-       'messages' => [
-           [
-               'role' => 'user',
-               'content' => [
-                   ['type' => 'text', 'text' => 'What is in this image?'],
-                   [
-                       'type' => 'image_url',
-                       'image_url' => [
-                           'url' => 'https://example.com/image.jpg'
-                       ]
-                   ]
-               ]
-           ]
-       ]
-   ]);
+// Completions with image
+$response = Groq::completions()->create([
+    'model' => 'llava-v1.5-7b-4096-preview',
+    'messages' => [
+        [
+            'role' => 'user',
+            'content' => [
+                ['type' => 'text', 'text' => 'What is in this image?'],
+                [
+                    'type' => 'image_url',
+                    'image_url' => [
+                        'url' => 'https://example.com/image.jpg'
+                    ]
+                ]
+            ]
+        ]
+    ]
+]);
 
-   echo $response['choices'][0]['message']['content'];
-   ```
+echo $response['choices'][0]['message']['content'];
+```
 
 **Example with streaming:**
 
-   ```php
-   // Completions with streaming
-   $stream = Groq::completions()->create([
-       'model' => 'llama-3.1-8b-instant',
-       'messages' => [
-           ['role' => 'user', 'content' => 'Tell a short story about a robot']
-       ],
-       'stream' => true
-   ]);
+```php
+// Completions with streaming
+$stream = Groq::completions()->create([
+    'model' => 'llama-3.1-8b-instant',
+    'messages' => [
+        ['role' => 'user', 'content' => 'Tell a short story about a robot']
+    ],
+    'stream' => true
+]);
 
-   // Process the response in stream (useful for real-time interfaces)
-   foreach ($stream->chunks() as $chunk) {
-       if (isset($chunk['choices'][0]['delta']['content'])) {
-           echo $chunk['choices'][0]['delta']['content'];
-           // Send to client in real-time (in real applications)
-           ob_flush();
-           flush();
-       }
-   }
-   ```
+// Process the response in stream (useful for real-time interfaces)
+foreach ($stream->chunks() as $chunk) {
+    if (isset($chunk['choices'][0]['delta']['content'])) {
+        echo $chunk['choices'][0]['delta']['content'];
+        // Send to client in real-time (in real applications)
+        ob_flush();
+        flush();
+    }
+}
+```
 
 ## File Management
 
 Groq Laravel allows you to manage files for use with the API.
 
-**Example of file management:**
+```php
+use LucianoTonet\GroqLaravel\Facades\Groq;
 
-   ```php
-   use LucianoTonet\GroqLaravel\Facades\Groq;
+// List files
+$files = Groq::files()->list();
 
-   // List files
-   $files = Groq::files()->list();
-   
-   // Upload a file
-   $file = Groq::files()->upload(storage_path('app/data/document.txt'), 'assistants');
-   
-   // Retrieve file information
-   $fileInfo = Groq::files()->retrieve($file['id']);
-   
-   // Delete a file
-   Groq::files()->delete($file['id']);
-   ```
+// Upload a file
+$file = Groq::files()->upload(storage_path('app/data/document.txt'), 'assistants');
+
+// Retrieve file information
+$fileInfo = Groq::files()->retrieve($file['id']);
+
+// Delete a file
+Groq::files()->delete($file['id']);
+```
 
 ## More examples
 
 As the GroqLaravel package is a wrapper for the GroqPHP package, you can check more examples in the [GroqPHP repository](https://github.com/lucianotonet/groq-php?tab=readme-ov-file#readme).
-
 
 ## Testing
 
@@ -348,6 +455,11 @@ Testing is an essential part of quality software development. The Groq Laravel p
    ```bash
    vendor/bin/phpunit ./tests/Feature/FacadeTest.php
    ```
+
+## Credits
+
+- [Luciano Tonet](https://github.com/lucianotonet)
+- [All Contributors](../../contributors)
 
 ## Contributing
 

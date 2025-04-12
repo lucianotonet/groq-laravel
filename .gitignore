@@ -20,3 +20,5 @@ yarn-error.log
 composer.lock
 proj2md.py
 CHANGELOG_GEN.sh
+.cursorrules
+.cursor/
