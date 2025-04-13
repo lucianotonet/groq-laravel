@@ -50,11 +50,11 @@ class GroqIntegrationTest extends TestCase
     /** @test */
     public function it_can_analyze_image()
     {
-        // Using a small embedded test image as Base64 to avoid external dependency
-        $base64Image = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFElEQVR42mP8z8BQz0AEYBxVSF+FABJADveWkH6oAAAAAElFTkSuQmCC';
+        // Usar uma URL de imagem pública para o teste - muito mais confiável que criar uma imagem local
+        $imageUrl = 'https://picsum.photos/200';
         
-        $response = Groq::vision()->analyze($base64Image, 'Describe this image');
-
+        $response = Groq::vision()->analyze($imageUrl, 'Describe this image briefly');
+        
         $this->assertIsArray($response);
         $this->assertArrayHasKey('choices', $response);
         $this->assertNotEmpty($response['choices']);

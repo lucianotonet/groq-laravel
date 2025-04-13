@@ -192,4 +192,24 @@ class GroqClient
         $property->setAccessible(true);
         return $property->getValue($this->client);
     }
+    
+    /**
+     * Public method to get the API key
+     * 
+     * @return string
+     */
+    public function apiKey(): string
+    {
+        return $this->getApiKey();
+    }
+    
+    /**
+     * Get the base URL from the client
+     * 
+     * @return string
+     */
+    public function baseUrl(): string
+    {
+        return $this->client->getBaseUrl();
+    }
 }

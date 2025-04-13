@@ -33,7 +33,8 @@ GROQ_MODEL=llama3-8b-8192  # optional, default model
 ```php
 use LucianoTonet\GroqLaravel\Facades\Groq;
 
-$response = Groq::chat()->create([
+$response = Groq::chat()->completions()->create([
+    'model' => 'meta-llama/llama-4-maverick-17b-128e-instruct', // Or any other model
     'messages' => [
         ['role' => 'user', 'content' => 'Hello, how are you?']
     ]

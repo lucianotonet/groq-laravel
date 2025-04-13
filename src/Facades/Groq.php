@@ -3,6 +3,7 @@
 namespace LucianoTonet\GroqLaravel\Facades;
 
 use Illuminate\Support\Facades\Facade;
+use LucianoTonet\GroqPHP\Groq as GroqPHP;
 
 /**
  * @method static \LucianoTonet\GroqPHP\Chat chat()
