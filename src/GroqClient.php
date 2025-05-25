@@ -128,6 +128,26 @@ class GroqClient
     }
 
     /**
+     * Get speech instance
+     * 
+     * @return \LucianoTonet\GroqPHP\Speech
+     */
+    public function speech()
+    {
+        return $this->client->speech();
+    }
+
+    /**
+     * Get batch instance
+     * 
+     * @return \LucianoTonet\GroqPHP\BatchManager
+     */
+    public function batch()
+    {
+        return $this->client->batches();
+    }
+
+    /**
      * Set configuration options
      * 
      * @param array $options

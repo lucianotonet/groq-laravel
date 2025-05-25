@@ -82,7 +82,35 @@ return [
     'rate_limit' => env('GROQ_RATE_LIMIT', 60),
 
     'vision' => [
-        'model' => env('GROQ_VISION_MODEL', 'llava-v1.5-7b-4096-preview'),
+        'model' => env('GROQ_VISION_MODEL', 'meta-llama/llama-4-scout-17b-16e-instruct'),
         'max_tokens' => env('GROQ_VISION_MAX_TOKENS', 300),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Batch Processing
+    |--------------------------------------------------------------------------
+    |
+    | Configurações para processamento em lote.
+    |
+    */
+    'batch' => [
+        'completion_window' => env('GROQ_BATCH_COMPLETION_WINDOW', '5m'),
+        'max_batch_size' => env('GROQ_BATCH_MAX_SIZE', 20),
+        'auto_process' => env('GROQ_BATCH_AUTO_PROCESS', true),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Speech (Text-to-Speech)
+    |--------------------------------------------------------------------------
+    |
+    | Configurações para o serviço de Text-to-Speech.
+    |
+    */
+    'speech' => [
+        'model' => env('GROQ_SPEECH_MODEL', 'playai-tts'),
+        'voice' => env('GROQ_SPEECH_VOICE', 'Bryan-PlayAI'),
+        'response_format' => env('GROQ_SPEECH_FORMAT', 'wav'),
     ],
 ];

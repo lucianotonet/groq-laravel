@@ -10,11 +10,13 @@ use LucianoTonet\GroqPHP\Groq as GroqPHP;
  * @method static \LucianoTonet\GroqPHP\Models models()
  * @method static \LucianoTonet\GroqPHP\Vision vision()
  * @method static \LucianoTonet\GroqPHP\Audio audio()
- * @method static \LucianoTonet\GroqPHP\Files files()
- * @method static \LucianoTonet\GroqPHP\Batches batches()
+ * @method static \LucianoTonet\GroqPHP\FileManager files()
+ * @method static \LucianoTonet\GroqPHP\BatchManager batches()
  * @method static void setConfig(array $options)
  * @method static void setOptions(array $options)
  * @method static \LucianoTonet\GroqPHP\Groq getClient()
+ * @method static string apiKey()
+ * @method static string baseUrl()
  *
  * @see \LucianoTonet\GroqLaravel\GroqClient
  */
@@ -83,5 +85,16 @@ class Groq extends Facade
     public static function files(): \LucianoTonet\GroqPHP\FileManager
     {
         return app(GroqPHP::class)->files();
+    }
+
+    /**
+     * Get batch instance for processing multiple requests.
+     *
+     * @return \LucianoTonet\GroqPHP\BatchManager An instance of the BatchManager class.
+     * @throws GroqException
+     */
+    public static function batch(): \LucianoTonet\GroqPHP\BatchManager
+    {
+        return app(GroqPHP::class)->batches();
     }
 }
