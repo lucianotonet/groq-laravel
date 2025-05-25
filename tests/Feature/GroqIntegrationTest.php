@@ -18,6 +18,7 @@ class GroqIntegrationTest extends TestCase
         // Use the real API key for integration tests
         $app['config']->set('groq.api_key', env('GROQ_API_KEY'));
         $app['config']->set('groq.model', 'llama-3.1-8b-instant');
+        $app['config']->set('groq.vision.model', env('GROQ_VISION_MODEL', 'llava-v1.5-7b-4096-preview'));
     }
 
     /** @test */
@@ -53,7 +54,10 @@ class GroqIntegrationTest extends TestCase
         // Usar uma URL de imagem pública para o teste - muito mais confiável que criar uma imagem local
         $imageUrl = 'https://picsum.photos/200';
         
-        $response = Groq::vision()->analyze($imageUrl, 'Describe this image briefly');
+        // Definir explicitamente o modelo de visão para o teste
+        $response = Groq::vision()->analyze($imageUrl, 'Describe this image briefly', [
+            'model' => 'meta-llama/llama-4-scout-17b-16e-instruct'
+        ]);
         
         $this->assertIsArray($response);
         $this->assertArrayHasKey('choices', $response);
@@ -90,27 +94,55 @@ class GroqIntegrationTest extends TestCase
     /** @test */
     public function it_can_handle_file_operations()
     {
-        // Create temporary JSONL file
-        $tempFile = tempnam(sys_get_temp_dir(), 'groq_test_') . '.jsonl';
-        file_put_contents($tempFile, json_encode(['prompt' => 'Hello']) . "\n" . json_encode(['prompt' => 'World']) . "\n");
+        // Create temporary text file with .jsonl extension
+        $tempDir = sys_get_temp_dir();
+        $tempFile = $tempDir . '/groq_test_' . uniqid() . '.jsonl';
+        
+        // Create valid JSONL content with required fields
+        $content = [
+            [
+                'model' => 'llama-3.1-8b-instant',
+                'messages' => [
+                    ['role' => 'user', 'content' => 'Hello, world!']
+                ]
+            ],
+            [
+                'model' => 'llama-3.1-8b-instant',
+                'messages' => [
+                    ['role' => 'user', 'content' => 'How are you?']
+                ]
+            ]
+        ];
 
-        // Upload
-        $file = Groq::files()->upload($tempFile, 'batch');
-        $this->assertNotEmpty($file->id);
+        // Write each line as JSON
+        $jsonlContent = '';
+        foreach ($content as $item) {
+            $jsonlContent .= json_encode($item) . "\n";
+        }
+        
+        file_put_contents($tempFile, $jsonlContent);
+        
+        try {
+            // Upload
+            $file = Groq::files()->upload($tempFile, 'batch');
+            $this->assertNotEmpty($file->id);
 
-        // List
-        $files = Groq::files()->list();
-        $this->assertIsArray($files);
-        $this->assertArrayHasKey('data', $files);
+            // List
+            $files = Groq::files()->list();
+            $this->assertIsArray($files);
+            $this->assertArrayHasKey('data', $files);
 
-        // Delete
-        $result = Groq::files()->delete($file->id);
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('deleted', $result);
-        $this->assertTrue($result['deleted']);
-
-        // Limpar
-        unlink($tempFile);
+            // Delete
+            $result = Groq::files()->delete($file->id);
+            $this->assertIsArray($result);
+            $this->assertArrayHasKey('deleted', $result);
+            $this->assertTrue($result['deleted']);
+        } finally {
+            // Cleanup
+            if (file_exists($tempFile)) {
+                unlink($tempFile);
+            }
+        }
     }
 
     /** @test */

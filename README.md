@@ -311,6 +311,49 @@ foreach ($result['segments'] as $segment) {
 }
 ```
 
+## Speech API (Text-to-Speech)
+
+The Groq Laravel package also supports Text-to-Speech (TTS) to convert text into spoken audio.
+
+**Basic example of Text-to-Speech:**
+
+```php
+use LucianoTonet\GroqLaravel\Facades\Groq;
+use Illuminate\Support\Facades\Storage;
+
+// Basic Text-to-Speech
+// Model, voice, and response_format will be taken from your config/groq.php by default.
+$speechResponse = Groq::speech()->create([
+    'input' => 'Hello from Groq Laravel! This is a text-to-speech test.',
+]);
+
+// Save the audio file (e.g., to storage/app/speech_output.wav)
+Storage::disk('local')->put('speech_output.wav', $speechResponse->body()); 
+// $speechResponse->body() contains the raw audio bytes.
+// You can also stream the response using $speechResponse->stream() if needed.
+```
+
+**Example with advanced options:**
+
+```php
+use LucianoTonet\GroqLaravel\Facades\Groq;
+use Illuminate\Support\Facades\Storage;
+
+// Text-to-Speech with advanced options
+$speechResponse = Groq::speech()->create([
+    'model' => 'playht/v2/samantha-v2-120ms-lowlatency', // Specify a different model (check Groq documentation for available TTS models)
+    'input' => 'This is a test with a different voice, format, and speed.',
+    'voice' => 'samantha-playht',   // Specify a different voice
+    'response_format' => 'mp3',   // Supported formats: mp3, ogg_vorbis, wav, flac
+    'speed' => 0.9                 // Adjust speed (0.25 to 4.0)
+]);
+
+// Save the audio file (e.g., to storage/app/speech_output_advanced.mp3)
+Storage::disk('local')->put('speech_output_advanced.mp3', $speechResponse->body());
+```
+
+**Note:** Refer to the official Groq API documentation for the latest available TTS models, voices, and supported formats. You can set default values in your `config/groq.php` file.
+
 ## Step-by-Step Reasoning
 
 Groq Laravel offers support for obtaining responses with step-by-step reasoning, useful for detailed explanations, mathematical problems, or any solution that benefits from a transparent process.

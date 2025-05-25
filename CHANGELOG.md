@@ -1,8 +1,36 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
 
- *🚧 Next Relesase*
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-04-12
+
+### Added
+- Suporte completo para Text-to-Speech via método `speech()`
+- Suporte aprimorado para processamento em lote via método `batch()`
+- Novas configurações para Speech API e Batch Processing
+- Documentação atualizada com exemplos de uso das novas funcionalidades
+
+### Changed
+- Atualizada dependência do groq-php para ^1.2.0
+- Melhorada a documentação do Facade com PHPDoc atualizado
+- Refatorado GroqClient para melhor gerenciamento de configurações
+
+### Fixed
+- Corrigido o método `batch()` para usar o nome correto do método no cliente groq-php
+
+## [Unreleased]
+
+### Changed
+- Updated vision model to use `meta-llama/llama-4-scout-17b-16e-instruct`, the latest recommended model by Groq
+- Improved file upload test to ensure proper text/plain MIME type recognition
+- Fixed file upload test to use correct purpose 'batch'
+
+### Notes
+- The new vision model `meta-llama/llama-4-scout-17b-16e-instruct` offers improved multimodal performance with support for a 128K token context window and image input up to 5 images
+- Current performance: 607 tokens per second (TPS) as benchmarked by Groq
 
 ## v0.0.10
 * [29/10/2024](https://github.com/lucianotonet/groq-laravel/commits/09f1be747860f9de89d5158d6370352c96b7020a) Update setting options
