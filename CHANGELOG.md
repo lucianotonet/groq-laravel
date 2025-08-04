@@ -68,3 +68,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [28/03/2024](https://github.com/lucianotonet/groq-laravel/commits/59993d56c3ee35f97ec644b165ae2c0c502f26ba) Add basic stuff
 * [27/03/2024](https://github.com/lucianotonet/groq-laravel/commits/9bdbe7592acaa19b960ffc359fe2ee8c52b7143f) WIP
 * [22/03/2024](https://github.com/lucianotonet/groq-laravel/commits/0b5eb656b3930880654e0562f56859554b5cf15e) First commit. Add base skeleton.
+
+## [1.3.0] - 2025-08-04
+
+### Breaking Changes in Files/Batches Module
+- Updated JSONL file format requirements for batch processing to match groq-php v1.3.0
+- Restricted file extensions to `.jsonl` only (removed support for `.json`, `.txt`, `.ndjson`)
+- Added stricter validation for file contents and structure
+
+### Changed
+- Updated groq-php dependency to ^1.3.0
+- Updated Files API validation to properly handle 'batch' purpose
+- Added support for additional MIME types in batch processing
+- Updated JSONL file format documentation and examples
+- Improved file validation in batch processing
+- Enhanced error messages for file validation
+
+### Added
+- Support for audio transcription and translation in batch processing
+- Support for chat completions in batch processing
+- New examples for batch processing with JSONL files
+- Improved error messages for file validation
+
+### Migration Guide for Files/Batches Module
+If you are using the Files/Batches module, you will need to:
+1. Update your JSONL files to include required fields:
+   - `custom_id`: Your unique identifier for tracking
+   - `method`: Must be "POST"
+   - `url`: One of: /v1/chat/completions, /v1/audio/transcriptions, or /v1/audio/translations
+   - `body`: Request parameters matching the endpoint format
+2. Ensure all files use `.jsonl` extension
+3. Update file content to match new validation requirements
+4. Review the updated documentation for complete format specifications

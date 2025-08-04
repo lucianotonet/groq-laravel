@@ -98,6 +98,20 @@ return [
         'completion_window' => env('GROQ_BATCH_COMPLETION_WINDOW', '5m'),
         'max_batch_size' => env('GROQ_BATCH_MAX_SIZE', 20),
         'auto_process' => env('GROQ_BATCH_AUTO_PROCESS', true),
+        'allowed_extensions' => ['.jsonl'], // Apenas arquivos JSONL são suportados
+        'allowed_mime_types' => [ // MIME types suportados para arquivos JSONL
+            'application/x-jsonlines',
+            'application/jsonl',
+            'application/x-ndjson',
+            'application/x-ndjason',
+            'text/jsonl'
+        ],
+        'validate_content' => env('GROQ_BATCH_VALIDATE_CONTENT', true), // Validar conteúdo do arquivo
+        'endpoints' => [ // Endpoints suportados para processamento em lote
+            '/v1/chat/completions',
+            '/v1/audio/transcriptions',
+            '/v1/audio/translations'
+        ]
     ],
 
     /*

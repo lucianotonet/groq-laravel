@@ -64,6 +64,17 @@ class GroqClient
             'top_p' => config('groq.options.top_p', 1.0),
             'frequency_penalty' => config('groq.options.frequency_penalty', 0),
             'presence_penalty' => config('groq.options.presence_penalty', 0),
+            'batch' => [
+                'allowed_extensions' => ['.jsonl'],
+                'allowed_mime_types' => [
+                    'application/x-jsonlines',
+                    'application/jsonl',
+                    'application/x-ndjson',
+                    'application/x-ndjason',
+                    'text/jsonl'
+                ],
+                'validate_content' => true
+            ]
         ];
     }
 
@@ -141,6 +152,7 @@ class GroqClient
      * Get batch instance
      * 
      * @return \LucianoTonet\GroqPHP\BatchManager
+     * @deprecated Use batches() instead
      */
     public function batch()
     {
